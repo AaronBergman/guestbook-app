@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guestbook</title>
+</head>
+<body>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Write a message...">
+        <button type="submit">Submit</button>
+    </form>
+
+    <ul id="messagesList"></ul>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const content = document.getElementById('messageInput').value;
+            const response = await fetch('/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            });
+            const message = await response.json();
+            displayMessage(message);
+            document.getElementById('messageInput').value = '';
+        });
+
+        async function fetchMessages() {
+            const response = await fetch('/messages');
+            const messages = await response.json();
+            messages.forEach(displayMessage);
+        }
+
+        function displayMessage(message) {
+            const li = document.createElement('li');
+            li.textContent = message.content;
+            document.getElementById('messagesList').appendChild(li);
+        }
+
+        // Fetch and display messages on page load
+        fetchMessages();
+    </script>
+</body>
+</html>
